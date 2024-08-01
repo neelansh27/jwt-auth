@@ -84,11 +84,15 @@ const Signup = () => {
           <label className="block text-gray-700">Password</label>
           <input
             type="password"
-            {...register("password", { required: true })}
+            {...register("password", { 
+              required: 'This field is required', 
+              minLength: {value: 8, message: 'Password must be atleast 8 characters'},
+              maxLength: {value: 20, message: 'Password should be at max 20 characters'}
+            })}
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
           />
           {errors.password && (
-            <span className="text-red-500">This field is required</span>
+            <span className="text-red-500">{errors.password.message}</span>
           )}
         </div>
         <button

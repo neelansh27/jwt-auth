@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import AuthProviderWrapper from "./components/AuthProviderWrapper";
 import Restricted from "./components/Restricted";
+import ResetPass from "./components/ResetPass";
 
 function App() {
   const router = createBrowserRouter([
@@ -18,6 +19,10 @@ function App() {
     {
       path: "/auth/login",
       element: <Login />,
+    },
+    {
+      path: '/auth/reset_password',
+      element: <ResetPass/>
     },
     {
       path: "/home",
