@@ -6,9 +6,7 @@ const cors = require('cors')
 const app = express()
 
 // Allowing access to frontend origin
-app.use(cors({
-  origin: process.env.FRONT_URL || 'http://localhost:5170'
-}))
+app.use(cors())
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.json());
