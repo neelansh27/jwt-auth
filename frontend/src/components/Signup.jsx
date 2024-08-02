@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 const Signup = () => {
@@ -13,7 +13,6 @@ const Signup = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data)
     fetch(import.meta.env.VITE_BACK_URL+'/signup',{
       method: 'post',
       headers: {
@@ -92,15 +91,21 @@ const Signup = () => {
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500"
           />
           {errors.password && (
-            <span className="text-red-500">{errors.password.message}</span>
+         <span className="text-red-500">{errors.password.message}</span>
           )}
         </div>
+    <div className="mb-4">
+    <Link to={'/auth/reset_password'} className="text-blue-500">Forgot Password?</Link>
+    </div>
         <button
           type="submit"
           className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-300"
         >
           Sign Up
         </button>
+        <div className="my-2 text-center">
+        <Link to={'/auth/login'} className="text-blue-500">Already have an account? Login</Link>
+        </div>
       </form>
     </div>
   );

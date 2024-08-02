@@ -2,6 +2,7 @@ import React, { useContext,useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 const Login = () => {
   // using useForm hook to make forms
   const {
@@ -11,7 +12,7 @@ const Login = () => {
   } = useForm();
 
   // Importing function to store the token
-  const {storeItems} = useContext(AuthContext);
+  const {storeItems,verify} = useContext(AuthContext);
 
   const [err, setErr] = useState("");
   const navigate = useNavigate();
@@ -26,11 +27,12 @@ const Login = () => {
       })
     })
       .then(res => res.json())
-      .then(res => {
+      .then(async (res) => {
         if (res.error){
           setErr(res.error.message);
         } else {
           // If there are no error, store the token and redirect
+          verify(res.token)
           storeItems(res.token);
           navigate('/home');
         }
@@ -75,6 +77,9 @@ const Login = () => {
         >
           Login
         </button>
+        <div className="my-2 text-center">
+        <Link to={'/auth/signup'} className="text-blue-500">New Here? SignUp</Link>
+        </div>
       </form>
     </div>
   );

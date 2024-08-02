@@ -4,9 +4,11 @@ function AuthProviderWrapper(props) {
   const [isLoggedIn, setisLoggedIn] = useState(false);
   const [loading, setloading] = useState(true);
   const [user, setuser] = useState(null);
-  
+
   // Storing JWT in local Storage
-  const storeItems = (token) => {
+  const storeItems = async (token) => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("timestamp");
     localStorage.setItem("token", token);
     localStorage.setItem("timestamp", Date.now());
   };
@@ -28,40 +30,42 @@ function AuthProviderWrapper(props) {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("timestamp");
-    window.location.reload()
+    setuser(null);
+    setisLoggedIn(false);
+    setloading(false);
   };
 
+  async function verify(token){
+    const res = await fetch(import.meta.env.VITE_BACK_URL+'/verify',{
+      method: 'post',
+      headers: {token}
+    })
+    const data = await res.json()
+    if (data) {
+      setuser(data)
+      setisLoggedIn(true);
+    } else {
+      console.log(JSON.stringify(err));
+      setuser(null);
+      setisLoggedIn(false);
+    }
+    setloading(false);
+  }
   useEffect(()=>{
     const token = localStorage.getItem("token");
     if (!token || tokenExpired()) {
+      setuser(null);
       setisLoggedIn(false);
       setloading(false);
-      setuser(null);
     } else {
-      fetch(import.meta.env.VITE_BACK_URL+'/verify',{
-        method: 'post',
-        headers: {token}
-      })
-        .then((res) => res.json())
-        .then((res) => {
-            setloading(false);
-            setuser(res);
-            setisLoggedIn(true);
-        })
-        .catch((err) => {
-          console.log(JSON.stringify(err));
-          setisLoggedIn(false);
-          setloading(false);
-          setuser(null);
-        });
+      verify(token)
     }
   },[])
-  if (!loading){
+  if (!loading)
     return (
-      <AuthContext.Provider value={{ storeItems, isLoggedIn, loading, user,logout}}>
-        {props.children}
+      <AuthContext.Provider value={{ storeItems, isLoggedIn, loading, user,verify,logout}}>
+      {props.children}
       </AuthContext.Provider>
     );
-  }
 }
 export default AuthProviderWrapper;

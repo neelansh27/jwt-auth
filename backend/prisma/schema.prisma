@@ -14,9 +14,18 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  phone    Int    @unique
-  password String
+  id          Int       @id @default(autoincrement())
+  name        String
+  email       String    @unique
+  phone       Int       @unique
+  password    String
+  resettokens Rtokens[] @relation("UserToken")
+}
+
+// used to reset passwords
+model Rtokens {
+  id           Int    @id @default(autoincrement())
+  userId       Int
+  userRelation User   @relation("UserToken", fields: [userId], references: [id])
+  token        String @unique
 }

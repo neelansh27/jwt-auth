@@ -9,3 +9,9 @@ html,body{
   font-family: "Poppins", sans-serif;
   font-style: normal;
 }
+
+@layer{
+  .subhead {
+    @apply border-b bg-gray-100 p-3 font-semibold;
+  }
+}

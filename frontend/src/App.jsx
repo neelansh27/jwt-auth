@@ -5,12 +5,14 @@ import Dashboard from "./components/Dashboard";
 import AuthProviderWrapper from "./components/AuthProviderWrapper";
 import Restricted from "./components/Restricted";
 import ResetPass from "./components/ResetPass";
+import ResetRequest from "./components/ResetRequest";
+import Land from "./components/Land";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <div>Hello</div>,
+      element: <Land/>,
     },
     {
       path: "/auth/signup",
@@ -22,6 +24,10 @@ function App() {
     },
     {
       path: '/auth/reset_password',
+      element: <ResetRequest/>
+    },
+    {
+      path: '/auth/reset_pass',
       element: <ResetPass/>
     },
     {

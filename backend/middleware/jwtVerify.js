@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 
 function verify(req,res,next){
   const token = req.headers.token;
-  console.log('sdf')
   if (!token){
     return res.status(400).json({err:"Token Verification Failed"});
   }
@@ -10,7 +9,6 @@ function verify(req,res,next){
   if (!valid){
     return res.status(400).json({err: "Token is Invalid"})
   }
-  console.log(valid)
   req.user=valid;
   return next();
 }

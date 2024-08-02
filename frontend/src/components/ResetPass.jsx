@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSearchParams } from "react-router-dom";
 
 const ResetPass = () => {
   const {
@@ -9,9 +10,32 @@ const ResetPass = () => {
     formState: { errors },
   } = useForm();
   const newPassword = watch("newPassword", "");
+  const [params,setParams] = useSearchParams();
+  const [err,setErr] = useState("");
+  const [notify, setNotify] = useState("")
 
   const onSubmit = (data) => {
-    console.log("Reset Password Form Submitted:", data);
+    fetch(import.meta.env.VITE_BACK_URL+'/reset_verify',{
+      method:'post',
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        token: params.get('token'),
+        id: params.get('id'),
+        password: data.newPassword
+      })
+    })
+      .then(res=>res.json())
+      .then(res=>{
+        console.log(res)
+        if (res.error){
+          setErr(res.error.message);
+          setNotify("")
+        } else {
+          setErr("");
+          setNotify("Password changed");
+        }
+      }).catch(err=>console.log(err))
+
   };
 
   // validation function to check if passwords match
@@ -28,6 +52,8 @@ const ResetPass = () => {
         <h2 className="text-center text-2xl font-bold mb-6 text-gray-800">
           Change Password
         </h2>
+          {err && <div className="text-red-500 text-center mb-4">{err}</div> }
+          {notify && <div className="text-green-500 text-center mb-4">{notify}</div> }
         <div className="mb-4">
           <label className="block text-gray-700">New Password</label>
           <input

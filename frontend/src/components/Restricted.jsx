@@ -5,7 +5,7 @@ const Restricted = (props) => {
   const navigate = useNavigate()
   const {isLoggedIn,loading} = useContext(AuthContext)
   useEffect(()=>{
-    if (!isLoggedIn && !loading){
+    if (!isLoggedIn){
       navigate("/auth/login")
     }
   },[isLoggedIn,loading])
