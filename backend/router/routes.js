@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -69,7 +69,7 @@ router.post("/login", async (req, res) => {
     id: user.id,
     name: user.name,
     phone: user.phone,
-    email: user.email
+    email: user.email,
   };
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: "24h",
@@ -83,17 +83,20 @@ router.post("/login", async (req, res) => {
 //   res.json(db);
 // });
 router.get("/fetchdb", async (req, res) => {
-  const [db,tk] = await Promise.all([
+  const [db, tk] = await Promise.all([
     prisma.user.findMany(),
     prisma.rtokens.findMany(),
   ]);
-  res.json({db,tk});
+  res.json({ db, tk });
 });
 
 router.post("/reset_pass", async (req, res) => {
   // Generating a unique token
   const rtoken = crypto.randomBytes(16).toString("hex");
-  const hashedtoken = await bcrypt.hash(rtoken, Number.parseInt(process.env.SALT) || 10);
+  const hashedtoken = await bcrypt.hash(
+    rtoken,
+    Number.parseInt(process.env.SALT) || 10,
+  );
 
   // checking if user with given email exists
   const user = await prisma.user.findUnique({
@@ -103,12 +106,17 @@ router.post("/reset_pass", async (req, res) => {
     return res
       .status(422)
       .json({ error: { message: "Check email, user not fount" } });
-  
+// Removing old tokens
+  await prisma.rtokens.deleteMany({
+    where: {
+      userId: user.id,
+    },
+  });
   await prisma.rtokens.create({
     data: {
       token: hashedtoken,
       userId: user.id,
-    }
+    },
   });
 
   const link = `${process.env.FRONT_URL}/auth/reset_pass?id=${user.id}&token=${rtoken}`;
@@ -130,33 +138,39 @@ router.post("/reset_pass", async (req, res) => {
   return res.json({ resetLink: link });
 });
 
-router.post('/reset_verify',async (req,res)=>{
+router.post("/reset_verify", async (req, res) => {
   const token = req.body.token;
   const id = req.body.id;
   // Checking if request is valid
   const entry = await prisma.rtokens.findFirst({
     where: {
       userId: Number.parseInt(id),
-    }
-  })
-  if (!entry) return res.status(422).json({error: {message: "Invalid request id"}})
-  
-  const valid = await bcrypt.compare(token,entry.token);
-  if (!valid) return res.status(422).json({error: {message: "Invalid request id"}})
+    },
+  });
+  if (!entry)
+    return res.status(422).json({ error: { message: "Invalid request id" } });
+  console.log("exists");
+  const valid = await bcrypt.compare(token, entry.token);
+  if (!valid)
+    return res.status(422).json({ error: { message: "Invalid request id" } });
+  console.log("Asdconsole.log");
   // updating user password
   const user = await prisma.user.update({
     where: {
       id: entry.userId,
     },
     data: {
-      password: await bcrypt.hash(req.body.password,Number.parseInt(process.env.SALT) || 10)
-    }
-  })
+      password: await bcrypt.hash(
+        req.body.password,
+        Number.parseInt(process.env.SALT) || 10,
+      ),
+    },
+  });
   await prisma.rtokens.deleteMany({
-    where:{
+    where: {
       id: user.id,
-    }
-  })
+    },
+  });
   return res.json(user);
-})
+});
 module.exports = router;
