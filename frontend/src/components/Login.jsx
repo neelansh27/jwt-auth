@@ -77,8 +77,11 @@ const Login = () => {
         >
           Login
         </button>
+        <div className="mb-4">
+            <Link to={'/auth/reset_password'} className="text-blue-500">Forgot Password?</Link>
+        </div>
         <div className="my-2 text-center">
-        <Link to={'/auth/signup'} className="text-blue-500">New Here? SignUp</Link>
+            <Link to={'/auth/signup'} className="text-blue-500">New Here? SignUp</Link>
         </div>
       </form>
     </div>

@@ -94,9 +94,6 @@ const Signup = () => {
          <span className="text-red-500">{errors.password.message}</span>
           )}
         </div>
-    <div className="mb-4">
-    <Link to={'/auth/reset_password'} className="text-blue-500">Forgot Password?</Link>
-    </div>
         <button
           type="submit"
           className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition duration-300"

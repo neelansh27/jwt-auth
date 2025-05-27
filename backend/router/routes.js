@@ -27,7 +27,7 @@ router.post("/signup", async (req, res) => {
     where: {
       OR: [
         {
-          phone: Number.parseInt(req.body.phone),
+          phone: req.body.phone,
         },
         {
           email: req.body.email,
@@ -44,11 +44,11 @@ router.post("/signup", async (req, res) => {
   const newUser = await prisma.user.create({
     data: {
       name: req.body.name,
-      phone: Number.parseInt(req.body.phone),
+      phone: req.body.phone,
       email: req.body.email,
       password: await bcrypt.hash(
         req.body.password,
-        Number.parseInt(Number.parseInt(process.env.SALT)) || 10,
+        Number.parseInt(process.env.SALT) || 10,
       ),
     },
   });
@@ -57,16 +57,14 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { phone: Number.parseInt(req.body.phone) },
+    where: { phone: req.body.phone },
   });
-  console.log(user)
   if (!user)
     return res.json({
       error: { message: "User not found, check phone number..." },
     });
   const valid = await bcrypt.compare(req.body.password, user.password);
   if (!valid) return res.json({ error: { message: "Invalid password..." } });
-  console.log(user)
   const payload = {
     id: user.id,
     name: user.name,
